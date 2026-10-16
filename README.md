@@ -35,10 +35,10 @@ The Intelligent Traffic Fine & Violation Management System is a C++-based projec
 - **Polymorphism:** Supports different types of traffic violations through a common interface.
 
 ## 👥 Team Members and Responsibilities
+- **Abhay:** Hash Table and Main Function
+- **Rakshit:** Violation Linked List Module
 - **Divyanshi:** Owner and Vehicle Module
 - **Akhil:** Violation Module
-- **Rakshit:** Violation Linked List Module
-- **Project Lead / Hash Table and Main Function:** [Add your name if different]
 
 ## ▶️ How to Run
 1. Clone or download this repository.
