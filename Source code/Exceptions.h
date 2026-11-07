@@ -1,9 +1,3 @@
-// =====================================================================
-// Exceptions.h  —  MEMBER 3: DIVYANSHI
-// Custom exception classes + input validation helpers
-//
-// No dependencies, so every other header can include it safely.
-// =====================================================================
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 
