@@ -1,32 +1,23 @@
-// =====================================================================
-// Records.h  —  MEMBER 3: DIVYANSHI
-// Record Management Module
-//
-//   Functions : findVehicle  (search by reg. number, throws if missing)
-//               logViolation (log a violation against a vehicle)
-// =====================================================================
 #ifndef RECORDS_H
 #define RECORDS_H
 
 #include "Vehicle.h"
 
-// ---------------------------------------------------------------
-// Record functions
-// ---------------------------------------------------------------
 
-// Search a vehicle by registration number (hash table lookup)
+// Record functions
+
+// Search a vehicle by registration number 
 Vehicle* findVehicle(HashTable& table, string reg) {
     Vehicle* v = table.search(toUpper(reg));
     if (v == nullptr) throw VehicleNotFoundException();
     return v;
 }
 
-// Log a violation against a vehicle. The surcharge is applied inside
-// Vehicle::addViolation (Rakshit's computeFinalFine).
+// Log a violation against a vehicle
 void logViolation(HashTable& table, string reg, Violation* v) {
     Vehicle* veh = table.search(toUpper(reg));
     if (veh == nullptr) {
-        delete v;                                  // avoid a memory leak
+        delete v;                             
         throw VehicleNotFoundException();
     }
     veh->addViolation(v);
