@@ -1,11 +1,3 @@
-// =====================================================================
-// main.cpp  —  MEMBER 4: AKHIL (final integration of all 4 modules)
-//
-// Build:  g++ -std=c++11 -Wall -Wextra main.cpp -o traffic
-// Run  :  ./traffic
-//
-// Input note: names and phone numbers must be ONE word (use _ for spaces).
-// =====================================================================
 #include "Payment.h"
 
 const string DATA_FILE = "records.txt";
@@ -23,8 +15,8 @@ void showMenu() {
 }
 
 int main() {
-    HashTable table;             // Abhay - vehicle storage
-    PendingQueue pending;        // Akhil - pending fines
+    HashTable table;      
+    PendingQueue pending;      
 
     if (loadFromFile(table, DATA_FILE))
         cout << "Loaded " << table.size() << " vehicle(s) from " << DATA_FILE << endl;
@@ -34,7 +26,7 @@ int main() {
     int choice = -1;
     do {
         showMenu();
-        if (!(cin >> choice)) {          // user typed a non-number
+        if (!(cin >> choice)) {       
             cin.clear();
             cin.ignore(1000, '\n');
             choice = -1;
@@ -53,7 +45,7 @@ int main() {
                     cin >> ownerName;
                     cout << "Phone: ";
                     cin >> phone;
-                    registerVehicle(table, type, reg, Owner(ownerName, phone));   // Abhay
+                    registerVehicle(table, type, reg, Owner(ownerName, phone));  
                     break;
                 }
                 case 2: {
@@ -65,28 +57,28 @@ int main() {
                     cin >> vtype;
                     cout << "Date (YYYY-MM-DD): ";
                     cin >> date;
-                    Violation* v = createViolation(vtype, date);                  // Rakshit
+                    Violation* v = createViolation(vtype, date);               
                     if (v == nullptr) {
                         cout << "Invalid violation type." << endl;
                         break;
                     }
-                    logViolation(table, reg, v);                                  // Divyanshi
+                    logViolation(table, reg, v);                         
                     break;
                 }
                 case 3: {
                     string reg;
                     cout << "Registration number: ";
                     cin >> reg;
-                    findVehicle(table, reg)->showDetails();                       // Divyanshi
+                    findVehicle(table, reg)->showDetails();               
                     break;
                 }
                 case 4:
-                    buildPendingQueue(table, pending);                            // Akhil
+                    buildPendingQueue(table, pending);                     
                     cout << "Pending fines in queue: " << pending.size() << endl;
                     processNextPending(pending);
                     break;
                 case 5:
-                    generateReport(table);                                        // Akhil
+                    generateReport(table);                                   
                     break;
                 case 0:
                     break;
