@@ -3,10 +3,6 @@ gui.py - Python (Tkinter) FRONTEND for the C++ Traffic Fine System.
 
 Run:   python3 gui.py
 
-All real work (fine calculation, linked list, hash table, stack, queue,
-sorting, file handling) is done by the C++ program. This window only
-collects input, shows results, and draws the dashboard. backend.py is the
-bridge that talks to the C++ program.
 """
 import datetime
 import tkinter as tk
