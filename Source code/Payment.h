@@ -1,20 +1,11 @@
-// =====================================================================
-// Payment.h  —  MEMBER 4: AKHIL
-// Payment, Persistence & Reporting Module
-//
-//   DSA side : PendingQueue (linked-list based queue, FIFO)
-//   Other    : File handling (save/load), summary report
-// =====================================================================
 #ifndef PAYMENT_H
 #define PAYMENT_H
 
 #include <fstream>
 #include "Records.h"
 
-// ---------------------------------------------------------------
+
 // DSA: QUEUE (FIFO) of pending fines
-// The queue only stores POINTERS; vehicles own the violations.
-// ---------------------------------------------------------------
 struct PendingItem {
     Vehicle* vehicle;
     Violation* violation;
@@ -129,13 +120,8 @@ void processNextPending(PendingQueue& q) {
          << v->getRegNumber() << " - Rs." << viol->getFinalFine() << endl;
 }
 
-// ---------------------------------------------------------------
+
 // FILE HANDLING
-// File format (one value per field, separated by spaces):
-//   <number of vehicles>
-//   <type> <reg> <ownerName> <phone> <violationCount>
-//   <violationType> <date> <finalFine> <paid 0/1>     (repeated)
-// ---------------------------------------------------------------
 bool saveToFile(HashTable& table, const string& filename) {
     ofstream out(filename.c_str());
     if (!out) return false;
@@ -159,7 +145,7 @@ bool saveToFile(HashTable& table, const string& filename) {
     return true;
 }
 
-// Returns false if the file does not exist (first run) or is unreadable
+// Returns false if the file does not exist or is unreadable
 bool loadFromFile(HashTable& table, const string& filename) {
     ifstream in(filename.c_str());
     if (!in) return false;
@@ -186,16 +172,16 @@ bool loadFromFile(HashTable& table, const string& filename) {
             if (viol == nullptr) continue;
             viol->setFinalFine(fine);
             viol->setPaid(paidFlag == 1);
-            veh->restoreViolation(viol);       // keeps the saved order
+            veh->restoreViolation(viol);     
         }
         if (!table.insert(veh)) delete veh;
     }
     return true;
 }
 
-// ---------------------------------------------------------------
+
 // SUMMARY REPORT
-// ---------------------------------------------------------------
+
 void generateReport(HashTable& table) {
     int n = table.size();
     int issuedCount = 0, issuedAmt = 0, collected = 0, pending = 0;
