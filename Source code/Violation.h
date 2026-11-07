@@ -1,12 +1,3 @@
-// =====================================================================
-// Violation.h  —  MEMBER 2: RAKSHIT
-// Violation & Fine Calculation Module
-//
-//   OOP side : Violation (abstract) + SpeedViolation, SignalJump,
-//              NoHelmet, WrongParking  (inheritance + polymorphism)
-//   DSA side : ViolationNode singly linked list (C-style struct +
-//              pointers, no STL)
-// =====================================================================
 #ifndef VIOLATION_H
 #define VIOLATION_H
 
@@ -14,21 +5,21 @@
 #include <string>
 using namespace std;
 
-// ---------------------------------------------------------------
+
 // OOP SIDE
-// ---------------------------------------------------------------
+
 class Violation {
 protected:
-    string date;      // "YYYY-MM-DD"
-    int finalFine;    // base fine + repeat-offender surcharge (set when logged)
+    string date;     
+    int finalFine;    
     bool paid;
 
 public:
     Violation(string d) : date(d), finalFine(0), paid(false) {}
 
-    virtual int calculateFine() = 0;     // pure virtual -> abstract class
+    virtual int calculateFine() = 0;    
     virtual string getName() = 0;
-    virtual int getTypeCode() = 0;       // used by file save/load
+    virtual int getTypeCode() = 0;     
 
     string getDate() { return date; }
     int getFinalFine() { return finalFine; }
@@ -72,8 +63,7 @@ public:
     int getTypeCode() override { return 4; }
 };
 
-// Factory: builds the right violation object from a type number.
-// Used by the menu (main.cpp) and by file loading (Payment.h).
+
 Violation* createViolation(int type, string date) {
     switch (type) {
         case 1: return new SpeedViolation(date);
@@ -84,15 +74,15 @@ Violation* createViolation(int type, string date) {
     }
 }
 
-// ---------------------------------------------------------------
-// DSA SIDE: C-style singly linked list
-// ---------------------------------------------------------------
+
+// DSA SIDE: 
+
 struct ViolationNode {
     Violation* data;
     ViolationNode* next;
 };
 
-// Insert at HEAD (newest first) - O(1)
+// Insert at HEAD 
 void pushViolation(ViolationNode*& head, Violation* v) {
     ViolationNode* node = new ViolationNode();
     node->data = v;
@@ -100,7 +90,7 @@ void pushViolation(ViolationNode*& head, Violation* v) {
     head = node;
 }
 
-// Insert at TAIL (keeps order when loading from file) - O(n)
+// Insert at TAIL 
 void appendViolation(ViolationNode*& head, Violation* v) {
     ViolationNode* node = new ViolationNode();
     node->data = v;
@@ -131,7 +121,7 @@ int totalDues(ViolationNode* head) {
 // Repeat-offender rule: +20% of the base fine for EACH earlier violation.
 // Call this BEFORE pushing the new violation into the list.
 int computeFinalFine(ViolationNode* head, Violation* v) {
-    int base = v->calculateFine();        // polymorphism: right formula runs
+    int base = v->calculateFine();      
     int prior = countViolations(head);
     int surcharge = (base * 20 * prior) / 100;
     return base + surcharge;
