@@ -1,9 +1,3 @@
-"""
-gui.py - Python (Tkinter) FRONTEND for the C++ Traffic Fine System.
-
-Run:   python3 gui.py
-
-"""
 import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -44,14 +38,17 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Intelligent Traffic Fine & Violation Management System")
-        self.geometry("1200x850")
-        self.minsize(1080, 800)
+        screen_width, screen_height = self.winfo_screenwidth(), self.winfo_screenheight()
+        window_width = min(1200, max(900, screen_width - 40))
+        window_height = min(850, max(600, screen_height - 80))
+        self.geometry(f"{window_width}x{window_height}")
+        self.minsize(min(900, window_width), min(600, window_height))
         self.configure(bg=BG)
 
         self.backend = TrafficBackend()
         self._build_styles()
         self._build_header()
-        self._build_status()      # packed before the body so it always stays visible
+        self._build_status()
         self._build_body()
         self.protocol("WM_DELETE_WINDOW", self.on_close)
         self._start_backend()
@@ -92,6 +89,8 @@ class App(tk.Tk):
                  bg=NAVY, fg="#CADCFC", font=("Helvetica", 10)).place(x=112, y=12)
         ttk.Button(bar, text="Load demo data", style="Amber.TButton",
                    command=self.load_demo).place(relx=1.0, x=-24, y=30, anchor="ne")
+        ttk.Button(bar, text="View all vehicles", style="Green.TButton",
+                   command=self.do_list_all).place(relx=1.0, x=-176, y=30, anchor="ne")
 
     def _card(self, parent, title):
         outer = tk.Frame(parent, bg=CARD, highlightbackground="#E5E7EB", highlightthickness=1)
@@ -112,12 +111,32 @@ class App(tk.Tk):
         body.columnconfigure(1, weight=1)
         body.rowconfigure(0, weight=1)
 
-        # ---------------- left: forms ----------------
+        # ---------------- left: scrollable forms ----------------
         left = ttk.Frame(body)
         left.grid(row=0, column=0, sticky="nsew", padx=(0, 14))
+        left.columnconfigure(0, weight=1)
+        left.rowconfigure(0, weight=1)
+
+        left_canvas = tk.Canvas(left, bg=BG, highlightthickness=0, borderwidth=0)
+        left_scroll = ttk.Scrollbar(left, orient="vertical", command=left_canvas.yview)
+        left_canvas.configure(yscrollcommand=left_scroll.set)
+        left_canvas.grid(row=0, column=0, sticky="nsew")
+        left_scroll.grid(row=0, column=1, sticky="ns")
+
+        form_area = ttk.Frame(left_canvas)
+        form_window = left_canvas.create_window((0, 0), window=form_area, anchor="nw")
+
+        def update_form_scrollregion(event=None):
+            left_canvas.configure(scrollregion=left_canvas.bbox("all"))
+
+        def fit_form_area(event):
+            left_canvas.itemconfigure(form_window, width=event.width)
+
+        form_area.bind("<Configure>", update_form_scrollregion)
+        left_canvas.bind("<Configure>", fit_form_area)
 
         # register
-        outer, f = self._card(left, "1. Register vehicle")
+        outer, f = self._card(form_area, "1. Register vehicle")
         outer.pack(fill="x", pady=(0, 10))
         self.reg_type = ttk.Combobox(f, values=list(VEHICLE_TYPES), state="readonly")
         self.reg_type.current(0)
@@ -132,7 +151,7 @@ class App(tk.Tk):
                    command=self.do_register).grid(row=4, column=0, columnspan=2, sticky="ew", pady=(8, 0))
 
         # violation
-        outer, f = self._card(left, "2. Log violation")
+        outer, f = self._card(form_area, "2. Log violation")
         outer.pack(fill="x", pady=(0, 10))
         self.vio_reg = ttk.Entry(f)
         self.vio_type = ttk.Combobox(f, values=list(VIOLATION_TYPES), state="readonly")
@@ -146,7 +165,7 @@ class App(tk.Tk):
                    command=self.do_log).grid(row=3, column=0, columnspan=2, sticky="ew", pady=(8, 0))
 
         # search
-        outer, f = self._card(left, "3. Search vehicle")
+        outer, f = self._card(form_area, "3. Search vehicle")
         outer.pack(fill="x", pady=(0, 10))
         self.search_reg = ttk.Entry(f)
         self._field(f, 0, "Reg. number", self.search_reg)
@@ -154,10 +173,10 @@ class App(tk.Tk):
                    command=self.do_search).grid(row=1, column=0, columnspan=2, sticky="ew", pady=(8, 0))
 
         # payment
-        outer, f = self._card(left, "4. Pay fines  (queue in C++)")
-        outer.pack(fill="x")
+        outer, f = self._card(form_area, "4. Pay fines  (queue in C++)")
+        outer.pack(fill="x", pady=(0, 10))
         ttk.Button(f, text="Pay oldest pending fine", style="Green.TButton",
-                   command=self.do_pay).grid(row=0, column=0, sticky="ew")
+                   command=self.do_pay).grid(row=0, column=0, sticky="ew", pady=(8, 0))
         f.columnconfigure(0, weight=1)
 
         # ---------------- right: dashboard ----------------
@@ -279,6 +298,9 @@ class App(tk.Tk):
             self.log("Error: enter a registration number to search.", "err")
             return
         self._run(self.backend.search, reg, kind_on_ok="info")
+
+    def do_list_all(self):
+        self._run(self.backend.list_all, kind_on_ok="info")
 
     def do_pay(self):
         self._run(self.backend.pay_oldest)
