@@ -10,13 +10,14 @@ void showMenu() {
     cout << "3. Search vehicle (details + history)" << endl;
     cout << "4. Pay oldest pending fine" << endl;
     cout << "5. Summary report" << endl;
+    cout << "6. View all registered vehicles" << endl;
     cout << "0. Save & exit" << endl;
     cout << "Enter choice: ";
 }
 
 int main() {
-    HashTable table;      
-    PendingQueue pending;      
+    HashTable table;           
+    PendingQueue pending;       
 
     if (loadFromFile(table, DATA_FILE))
         cout << "Loaded " << table.size() << " vehicle(s) from " << DATA_FILE << endl;
@@ -26,7 +27,7 @@ int main() {
     int choice = -1;
     do {
         showMenu();
-        if (!(cin >> choice)) {       
+        if (!(cin >> choice)) {         
             cin.clear();
             cin.ignore(1000, '\n');
             choice = -1;
@@ -57,28 +58,31 @@ int main() {
                     cin >> vtype;
                     cout << "Date (YYYY-MM-DD): ";
                     cin >> date;
-                    Violation* v = createViolation(vtype, date);               
+                    Violation* v = createViolation(vtype, date);                 
                     if (v == nullptr) {
                         cout << "Invalid violation type." << endl;
                         break;
                     }
-                    logViolation(table, reg, v);                         
+                    logViolation(table, reg, v);                                  
                     break;
                 }
                 case 3: {
                     string reg;
                     cout << "Registration number: ";
                     cin >> reg;
-                    findVehicle(table, reg)->showDetails();               
+                    findVehicle(table, reg)->showDetails();                  
                     break;
                 }
                 case 4:
-                    buildPendingQueue(table, pending);                     
+                    buildPendingQueue(table, pending);                            
                     cout << "Pending fines in queue: " << pending.size() << endl;
                     processNextPending(pending);
                     break;
                 case 5:
-                    generateReport(table);                                   
+                    generateReport(table);                                       
+                    break;
+                case 6:
+                    table.display();                                             
                     break;
                 case 0:
                     break;
