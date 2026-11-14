@@ -4,7 +4,6 @@
 #include <fstream>
 #include "Records.h"
 
-
 // DSA: QUEUE (FIFO) of pending fines
 struct PendingItem {
     Vehicle* vehicle;
@@ -120,7 +119,6 @@ void processNextPending(PendingQueue& q) {
          << v->getRegNumber() << " - Rs." << viol->getFinalFine() << endl;
 }
 
-
 // FILE HANDLING
 bool saveToFile(HashTable& table, const string& filename) {
     ofstream out(filename.c_str());
@@ -145,7 +143,7 @@ bool saveToFile(HashTable& table, const string& filename) {
     return true;
 }
 
-// Returns false if the file does not exist or is unreadable
+// Returns false if the file does not exist (first run) or is unreadable
 bool loadFromFile(HashTable& table, const string& filename) {
     ifstream in(filename.c_str());
     if (!in) return false;
@@ -172,13 +170,12 @@ bool loadFromFile(HashTable& table, const string& filename) {
             if (viol == nullptr) continue;
             viol->setFinalFine(fine);
             viol->setPaid(paidFlag == 1);
-            veh->restoreViolation(viol);     
+            veh->restoreViolation(viol);       // keeps the saved order
         }
         if (!table.insert(veh)) delete veh;
     }
     return true;
 }
-
 
 // SUMMARY REPORT
 
