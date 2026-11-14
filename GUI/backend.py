@@ -1,16 +1,3 @@
-"""
-backend.py - the BRIDGE between the Python GUI and the C++ program.
-
-The C++ program (main.cpp) is NOT changed. This file starts it as a
-background process and does exactly what a human would do at the console:
-  1. types the menu choice and the answers into its stdin
-  2. reads whatever it prints from its stdout
-  3. removes the menu/prompt text so only the useful result remains
-
-The process stays alive for the whole GUI session. Records are saved to
-records.txt when the session is closed (same as choosing "0. Save & exit"
-in the console).
-"""
 import os
 import queue
 import re
@@ -18,8 +5,8 @@ import subprocess
 import sys
 import threading
 
-PROMPT = b"Enter choice: "       
-MENU_MARK = "===== TRAFFIC FINE"   
+PROMPT = b"Enter choice: "         
+MENU_MARK = "===== TRAFFIC FINE"    
 
 # Prompts that the C++ program prints while asking for details
 PROMPT_TEXTS = [
@@ -54,7 +41,6 @@ class TrafficBackend:
         self.startup_message = ""
 
     # starting / stopping the C++ program
-
     def _exe_path(self):
         name = "traffic.exe" if sys.platform.startswith("win") else "traffic"
         return os.path.join(self.root, "build", name)
@@ -106,9 +92,7 @@ class TrafficBackend:
         self.proc = None
         return msg.strip()
 
-    # ------------------------------------------------------------------
     # low-level talking
-    # ------------------------------------------------------------------
     def _reader(self):
         proc = self.proc
         while True:
@@ -116,7 +100,7 @@ class TrafficBackend:
             if not data:
                 break
             self._chunks.put(data)
-        self._chunks.put(None)          # end of stream
+        self._chunks.put(None)        
 
     def _read_until_prompt(self, timeout=5.0):
         buf = b""
@@ -159,9 +143,7 @@ class TrafficBackend:
         self.proc.stdin.flush()
         return self._clean(self._read_until_prompt())
 
-
     # one method per menu option
-
     def register_vehicle(self, vehicle_type, reg, owner, phone):
         return self._command([1, VEHICLE_TYPES[vehicle_type],
                               one_word(reg), one_word(owner), one_word(phone)])
@@ -179,9 +161,10 @@ class TrafficBackend:
     def report_text(self):
         return self._command([5])
 
+    def list_all(self):
+        return self._command([6])
 
     # parsed versions (used by the dashboard)
-
     def report(self):
         text = self.report_text()
         keys = {
