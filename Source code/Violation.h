@@ -17,9 +17,9 @@ protected:
 public:
     Violation(string d) : date(d), finalFine(0), paid(false) {}
 
-    virtual int calculateFine() = 0;    
+    virtual int calculateFine() = 0;   
     virtual string getName() = 0;
-    virtual int getTypeCode() = 0;     
+    virtual int getTypeCode() = 0;       
 
     string getDate() { return date; }
     int getFinalFine() { return finalFine; }
@@ -75,7 +75,7 @@ Violation* createViolation(int type, string date) {
 }
 
 
-// DSA SIDE: 
+// DSA SIDE: C-style singly linked list
 
 struct ViolationNode {
     Violation* data;
@@ -90,7 +90,7 @@ void pushViolation(ViolationNode*& head, Violation* v) {
     head = node;
 }
 
-// Insert at TAIL 
+// Insert at TAIL
 void appendViolation(ViolationNode*& head, Violation* v) {
     ViolationNode* node = new ViolationNode();
     node->data = v;
@@ -121,7 +121,7 @@ int totalDues(ViolationNode* head) {
 // Repeat-offender rule: +20% of the base fine for EACH earlier violation.
 // Call this BEFORE pushing the new violation into the list.
 int computeFinalFine(ViolationNode* head, Violation* v) {
-    int base = v->calculateFine();      
+    int base = v->calculateFine();        // polymorphism: right formula runs
     int prior = countViolations(head);
     int surcharge = (base * 20 * prior) / 100;
     return base + surcharge;
