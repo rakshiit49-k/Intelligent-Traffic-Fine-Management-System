@@ -2,9 +2,9 @@
 #define VEHICLE_H
 
 #include <stdexcept>
+#include <iomanip>
 #include "Violation.h"
 #include "Exceptions.h"
-
 
 // OOP SIDE
 
@@ -23,17 +23,18 @@ class Vehicle {
 protected:
     string regNumber;
     Owner owner;
-    ViolationNode* violationHead; 
+    ViolationNode* violationHead;   // Rakshit's linked list lives inside each vehicle
 
 public:
     Vehicle(string reg, Owner o) : regNumber(reg), owner(o), violationHead(nullptr) {}
 
+    // a vehicle owns heap memory, so copying is not allowed
     Vehicle(const Vehicle&) = delete;
     Vehicle& operator=(const Vehicle&) = delete;
 
     virtual ~Vehicle() { freeList(violationHead); }
 
-    virtual string getType() = 0;     
+    virtual string getType() = 0;       
     virtual int getTypeCode() = 0;      
 
     string getRegNumber() { return regNumber; }
@@ -41,12 +42,11 @@ public:
     string getOwnerPhone() { return owner.getPhone(); }
     ViolationNode* getViolationHead() { return violationHead; }
 
-    // Log a NEW violation
+    // Log a NEW violation:
     void addViolation(Violation* v) {
         v->setFinalFine(computeFinalFine(violationHead, v));
         pushViolation(violationHead, v);
     }
-
 
     void restoreViolation(Violation* v) { appendViolation(violationHead, v); }
 
@@ -93,7 +93,6 @@ Vehicle* createVehicle(int type, string reg, Owner o) {
     }
 }
 
-
 // DSA SIDE: Hash table with separate chaining
 
 struct HashNode {
@@ -107,7 +106,7 @@ private:
     HashNode* buckets[SIZE];
     int count;
 
-    // our own hash function
+    // our own hash function:
     int hashFunction(const string& key) {
         unsigned long h = 0;
         for (size_t i = 0; i < key.length(); i++)
@@ -180,6 +179,31 @@ public:
             for (HashNode* cur = buckets[i]; cur != nullptr && n < maxCount; cur = cur->next)
                 out[n++] = cur->vehicle;
         return n;
+    }
+
+    void display() {
+        if (count == 0) {
+            cout << "No vehicles registered." << endl;
+            return;
+        }
+        cout << left << setw(7) << "Shelf" << setw(14) << "Vehicle" << setw(14) << "Type"
+             << setw(14) << "Owner" << setw(12) << "Violations" << "Dues" << endl;
+        int shelvesUsed = 0, longestChain = 0;
+        for (int i = 0; i < SIZE; i++) {
+            int chain = 0;
+            for (HashNode* cur = buckets[i]; cur != nullptr; cur = cur->next) {
+                Vehicle* v = cur->vehicle;
+                cout << setw(7) << i << setw(14) << v->getRegNumber() << setw(14) << v->getType()
+                     << setw(14) << v->getOwnerName() << setw(12) << v->getViolationCount()
+                     << "Rs." << v->getTotalDues() << endl;
+                chain++;
+            }
+            if (chain > 0) shelvesUsed++;
+            if (chain > longestChain) longestChain = chain;
+        }
+        cout << right;
+        cout << "Vehicles: " << count << " | Shelves used: " << shelvesUsed << " of " << SIZE
+             << " | Longest chain: " << longestChain << endl;
     }
 };
 
