@@ -12,7 +12,7 @@
 
 *PBL Project (Data Structures + OOP with C++) · B.Tech CSE · Graphic Era Hill University · Team **SYNAPSE***
 
-![The Python window running on the C++ program](docs/images/gui_window.png)
+![The Python window running on the C++ program](gui_window.png)
 
 </div>
 
