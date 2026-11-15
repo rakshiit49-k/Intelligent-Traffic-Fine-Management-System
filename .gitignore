@@ -1,0 +1,15 @@
+# compiled program and saved data
+build/
+records.txt
+*.exe
+*.o
+
+# Python
+__pycache__/
+*.pyc
+
+# editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
